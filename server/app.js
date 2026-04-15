@@ -15,7 +15,7 @@ const router = require('./router.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-const dbURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/DomoMakerD';
+const dbURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/Project2';
 mongoose.connect(dbURI).catch((err)=>{
     if(err){
         console.log('Could not connect to database');
@@ -41,7 +41,7 @@ const app = express();
 
 app.use(helmet());
 app.use('/assets',express.static(path.resolve(`${__dirname}/../hosted`)));
-app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
+app.use(favicon(`${__dirname}/../hosted/img/favicon.svg`));
 app.use(compression());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
