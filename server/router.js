@@ -13,7 +13,7 @@ const router = (app) => {
    
     app.get('/',mid.requiresSecure,mid.requiresLogout, controllers.Account.loginPage);
 
-    //app.get('/board',mid.requiresSecure,mid.requiresLogin, controllers.Account.board);
+    app.get('/board',mid.requiresSecure,mid.requiresLogin, controllers.Board.getBoard);
     
 
     

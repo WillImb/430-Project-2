@@ -3,6 +3,8 @@
 /* Sends post requests to the server using fetch. Will look for various
    entries in the response JSON object, and will handle them appropriately.
 */
+
+
 const sendPost = async (url, data,handler) => {
   const response = await fetch(url, {
     method: 'POST',
@@ -19,9 +21,7 @@ const sendPost = async (url, data,handler) => {
     window.location = result.redirect;
   }
 
-  if(result.error) {
-    handleError(result.error);
-  }
+  
 
   if(handler){
     handler(result);
@@ -33,7 +33,6 @@ const sendPost = async (url, data,handler) => {
 
 
 module.exports = {
-    handleError,
+    
     sendPost,
-    sendDelete,
 };

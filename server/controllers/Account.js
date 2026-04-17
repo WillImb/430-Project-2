@@ -2,7 +2,7 @@ const models = require('../models');
 const Account = models.Account;
 
 const loginPage = (req, res) => {
-    return res.render('board');
+    return res.render('login');
 };
 
 
@@ -15,18 +15,21 @@ const logout = (req, res) => {
 const login = (req, res) => {
     const username = `${req.body.username}`;
     const pass = `${req.body.pass}`;
-
+    
     if (!username || !pass) {
+        console.log("error a");
         return res.status(400).json({ error: 'All Fields are required!' });
     }
     return Account.authenticate(username, pass, (err, account) => {
         if (err || !account) {
+        console.log("error b");
+
             return res.status(401).json({ error: 'Wrong username or password!' });
         }
 
         req.session.account = Account.toAPI(account);
 
-        return res.json({ redirect: '/maker' });
+        return res.json({ redirect: '/board' });
     });
 };
 
@@ -36,11 +39,13 @@ const signup = async (req, res) => {
     const pass2 = `${req.body.pass2}`;
 
     if (!username || !pass || !pass2) {
+        console.log("error c");
+
         return res.status(400).json({ error: 'All Fields are required' });
     }
 
     if (pass !== pass2) {
-        return res.status(400).json({ erro: 'Passwords do not match!' });
+        return res.status(400).json({ error: 'Passwords do not match!' });
     }
 
     try {
@@ -48,7 +53,7 @@ const signup = async (req, res) => {
         const newAccount = new Account({ username, password: hash })
         await newAccount.save();
         req.session.account = Account.toAPI(newAccount);
-        return res.json({ redirect: '/maker' });
+        return res.json({ redirect: '/board' });
     }
     catch (err) {
         console.log(err);
