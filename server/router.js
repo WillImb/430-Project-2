@@ -22,12 +22,13 @@ const router = (app) => {
 
 
     app.get('/getBoard/:id',mid.requiresSecure,mid.requiresLogin, controllers.Board.getBoard);
+    app.get('/getUmls/:id',mid.requiresSecure,mid.requiresLogin, controllers.Board.getUmls);
 
     app.post('/createBoard',mid.requiresSecure,mid.requiresLogin, controllers.Board.createBoard);
     
 
     
-    //app.post('/addEmptyUml',mid.requiresSecure,mid.requiresLogin, controllers.Board.addEmptyUml);
+    app.post('/addEmptyUml/:id',mid.requiresSecure,mid.requiresLogin, controllers.Board.addEmptyUml);
     
     
 

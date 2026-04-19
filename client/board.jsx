@@ -9,56 +9,130 @@ const pageId = window.location.pathname.split('/').pop();
 
 const AddEmptyUml = () => {
 
-    const newUML = {
-        "name": "",
-        "functions": [],
-        "fields": []
-    }
 
-    helper.sendPost("/addEmptyUml", newUML);
 }
 
-const Uml = (props) => {
+
+const ToolBar = (props) => {
+
+    const addEmptyUml = (e) => {
+        e.preventDefault();
+
+        const newUML = {
+            "name": "",
+            "functions": [],
+            "fields": []
+        }
+
+        helper.sendPost(`/addEmptyUml/${pageId}`, newUML);
+    }
+
+    return (
+        <div>
+            <button id="addUml" onClick={addEmptyUml}>Add uml</button>
+        </div>
+    );
+}
+
+const Board = (props) => {
 
     const [title, setTitle] = useState();
-    const [fields, setFields] = useState();
-    const [methods, setMethods] = useState();
+
+    useEffect(() => {
+        const getBoardFromServer = async () => {
+            try {
+                const response = await fetch(`/getBoard/${pageId}`);
+
+                const data = await response.json();
+
+                setTitle(data.title)
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
+        getBoardFromServer();
+    }, [pageId]);
+    
+
+    return (
+        <div className="board">
+            {title}
+
+        </div>
+    );
+};
+
+
+const Umls = (props) => {
+
+    const [umls, setUmls] = useState([]);
 
     useEffect(() => {
         const getUmlFromServer = async () => {
             try {
-                const response = await fetch(`/getBoard/${pageId}`);
-    
-                const data = await response.json();
+                const response = await fetch(`/getUmls/${pageId}`);
 
-                setTitle(data.title);
+                const data = await response.json();
+                setUmls(data)
             }
             catch (err) {
                 console.log(err);
             }
         }
         getUmlFromServer();
-    }, [pageId]);
+    }, []);
+
+    if(umls.length === 0){
+        return(
+            <div>
+                No umls yet
+            </div>
+        );
+    }
+
+    const displayUmls = umls.map(uml => {
+        return(<div>
+            <div>{uml.name}</div>
+            <div>{uml.functions}</div>
+            <div>{uml.fields}</div>
+
+        </div>)
+    })
+    
 
     return (
         <div className="uml">
-            {title}
+            {displayUmls}
+
         </div>
     );
 };
 
+const App = () => {
+    return (
+        <div>
+            <div>
+                <ToolBar />
+            </div>
+            <div>
+                <Board />
+            </div>
+            <div>
+                <Umls />
+            </div>
+        </div>
+    );
+
+}
+
 const init = () => {
 
-    const addUmlBtn = document.getElementById("addUml");
+
     const root = createRoot(document.getElementById('content'));
 
 
-
-    addUmlBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-    });
-
-    root.render(<Uml />);
+    root.render(<App />);
 };
 
 window.onload = init;

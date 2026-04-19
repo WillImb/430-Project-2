@@ -6,47 +6,75 @@ const { useEffect, useState } = React;
 const { createRoot } = require('react-dom/client');
 
 
+
+
+
+const BoardMenu = (props) => {
+
+    const createBoard = async(e) => {
+        e.preventDefault();
+        await helper.sendPost('/createBoard', {});
+        props.triggerReload();
+    }
+
+    return (
+        <div><button id="createBoard" onClick={createBoard}>Make new board</button></div>
+    )
+}
+
 const BoardList = (props) => {
 
     const [boards, setBoards] = useState([]);
 
+
     useEffect(() => {
-        const loadBoardsFromServer = async() => {
+        const loadBoardsFromServer = async () => {
             const response = await fetch('/getUserBoards');
             const data = await response.json();
 
             setBoards(data.boards);
         };
         loadBoardsFromServer();
-    }, []);
+    }, [props.reloadBoards]);
 
 
-    if(boards.length === 0 ){
-        return(<div>No Boards Yet</div>);
+    if (boards.length === 0) {
+        return (<div>No Boards Yet</div>);
     }
 
     const boardsDisplay = boards.map(board => {
-        return(<div><a
+        return (<div><a
             href={`/board/${board._id}`}>
             {board.title}
-            </a></div>);
+        </a></div>);
     });
 
     return (<div>{boardsDisplay}</div>);
 }
 
+const App = () => {
+
+    const [reload, setReload] = useState(false);
+
+    return (
+        <div>
+            <div>
+                <BoardMenu triggerReload={() => { setReload(!reload) }} />
+            </div>
+
+            <div>
+                <BoardList reloadBoards={reload} />
+            </div>
+        </div>
+    );
+}
+
+
 const init = () => {
-
-    const createBoardBtn = document.getElementById("createBoard");
-
-    createBoardBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        helper.sendPost('/createBoard',{});
-    })
 
     const root = createRoot(document.getElementById('menu'));
 
-    root.render(<BoardList />);
+    root.render(<App />);
 };
 
 window.onload = init;
