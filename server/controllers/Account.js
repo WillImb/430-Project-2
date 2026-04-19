@@ -5,9 +5,11 @@ const loginPage = (req, res) => {
     return res.render('login');
 };
 
-const menuPage = (req,res) => {
+const menuPage = (req, res) => {
     return res.render('menu');
 };
+
+
 
 
 const logout = (req, res) => {
@@ -19,14 +21,14 @@ const logout = (req, res) => {
 const login = (req, res) => {
     const username = `${req.body.username}`;
     const pass = `${req.body.pass}`;
-    
+
     if (!username || !pass) {
         console.log("error a");
         return res.status(400).json({ error: 'All Fields are required!' });
     }
     return Account.authenticate(username, pass, (err, account) => {
         if (err || !account) {
-        console.log("error b");
+            console.log("error b");
 
             return res.status(401).json({ error: 'Wrong username or password!' });
         }
@@ -78,4 +80,5 @@ module.exports = {
     logout,
     signup,
     menuPage,
+    
 }

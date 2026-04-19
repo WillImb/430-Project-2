@@ -37,22 +37,9 @@ const hideError = () => {
   document.getElementById('domoMessage').classList.add('hidden');
 };
 
-const getUmlCount = async (title) => {
-  try {
-    const response = await fetch("/getUmlCount",{
-      method: 'GET',
-      headers: {
-      'Content-Type': 'application/json',
-    },
-    body:{title: title}
-    });
-    const data = await response.json();
 
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
+
+
 
 
 module.exports = {
@@ -60,4 +47,5 @@ module.exports = {
   sendPost,
   handleError,
   hideError,
+
 };

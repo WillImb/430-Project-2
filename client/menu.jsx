@@ -5,25 +5,34 @@ const React = require('react');
 const { useEffect, useState } = React;
 const { createRoot } = require('react-dom/client');
 
-let umlCount = 0;
-
-
 
 const BoardList = (props) => {
 
-    const [boards, setBoards] = useState({});
+    const [boards, setBoards] = useState([]);
 
     useEffect(() => {
         const loadBoardsFromServer = async() => {
             const response = await fetch('/getUserBoards');
             const data = await response.json();
 
-            setBoards(data);
+            setBoards(data.boards);
         };
         loadBoardsFromServer();
     }, []);
 
-    return (<div>{JSON.stringify(boards)}</div>)
+
+    if(boards.length === 0 ){
+        return(<div>No Boards Yet</div>);
+    }
+
+    const boardsDisplay = boards.map(board => {
+        return(<div><a
+            href={`/board/${board._id}`}>
+            {board.title}
+            </a></div>);
+    });
+
+    return (<div>{boardsDisplay}</div>);
 }
 
 const init = () => {
@@ -36,10 +45,6 @@ const init = () => {
     })
 
     const root = createRoot(document.getElementById('menu'));
-
-
-
-    
 
     root.render(<BoardList />);
 };

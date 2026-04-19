@@ -5,7 +5,7 @@ const React = require('react');
 const { useEffect, useState } = React;
 const { createRoot } = require('react-dom/client');
 
-let umlCount = 0;
+const pageId = window.location.pathname.split('/').pop();
 
 const AddEmptyUml = () => {
 
@@ -15,7 +15,7 @@ const AddEmptyUml = () => {
         "fields": []
     }
 
-    helper.sendPost("/addEmptyUml",newUML);
+    helper.sendPost("/addEmptyUml", newUML);
 }
 
 const Uml = (props) => {
@@ -27,17 +27,18 @@ const Uml = (props) => {
     useEffect(() => {
         const getUmlFromServer = async () => {
             try {
-                const response = await fetch("/getBoard");
+                const response = await fetch(`/getBoard/${pageId}`);
+    
                 const data = await response.json();
 
-                setTitle(JSON.stringify(data));
+                setTitle(data.title);
             }
             catch (err) {
                 console.log(err);
             }
         }
         getUmlFromServer();
-    }, []);
+    }, [pageId]);
 
     return (
         <div className="uml">
