@@ -5,6 +5,10 @@ const loginPage = (req, res) => {
     return res.render('login');
 };
 
+const menuPage = (req,res) => {
+    return res.render('menu');
+};
+
 
 const logout = (req, res) => {
     req.session.destroy();
@@ -29,7 +33,7 @@ const login = (req, res) => {
 
         req.session.account = Account.toAPI(account);
 
-        return res.json({ redirect: '/board' });
+        return res.json({ redirect: '/menu' });
     });
 };
 
@@ -53,7 +57,7 @@ const signup = async (req, res) => {
         const newAccount = new Account({ username, password: hash })
         await newAccount.save();
         req.session.account = Account.toAPI(newAccount);
-        return res.json({ redirect: '/board' });
+        return res.json({ redirect: '/menu' });
     }
     catch (err) {
         console.log(err);
@@ -65,9 +69,13 @@ const signup = async (req, res) => {
     }
 };
 
+
+
+
 module.exports = {
     loginPage,
     login,
     logout,
     signup,
+    menuPage,
 }

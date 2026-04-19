@@ -6,7 +6,9 @@ const handleError = (message) => {
   document.getElementById('domoMessage').classList.remove('hidden');
 };
 
-const sendPost = async (url, data,handler) => {
+
+
+const sendPost = async (url, data, handler) => {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -16,30 +18,46 @@ const sendPost = async (url, data,handler) => {
   });
 
   const result = await response.json();
- 
 
-  if(result.redirect) {
+
+  if (result.redirect) {
     window.location = result.redirect;
   }
 
-  if(result.error) {
+  if (result.error) {
     handleError(result.error);
   }
 
-  if(handler){
+  if (handler) {
     handler(result);
   }
 };
 
 const hideError = () => {
-    document.getElementById('domoMessage').classList.add('hidden');
+  document.getElementById('domoMessage').classList.add('hidden');
 };
 
+const getUmlCount = async (title) => {
+  try {
+    const response = await fetch("/getUmlCount",{
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+    },
+    body:{title: title}
+    });
+    const data = await response.json();
+
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
 
 
 module.exports = {
-    
-    sendPost,
-    handleError,
-    hideError,
+
+  sendPost,
+  handleError,
+  hideError,
 };
