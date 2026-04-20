@@ -273,4 +273,11 @@ button{
 
 .uml{
     background-color: lightblue;
+    outline: solid 1px black;
+    height: 100px;
+    width: 200px;
+    overflow: hidden;
+}
+#popup{
+    background-color: lightcoral;
 }

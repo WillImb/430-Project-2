@@ -1,6 +1,14 @@
 const mongoose = require('mongoose');
+const { functions } = require('underscore');
 
 let BoardModel = {};
+
+const UmlSchema = new mongoose.Schema({
+   id:String,
+   name:String,
+   functions:[String],
+   fields:[String]
+});
 
 const BoardSchema = new mongoose.Schema({
    title:{
@@ -8,8 +16,8 @@ const BoardSchema = new mongoose.Schema({
       default: "test",
    },
    umls:{
-        type:[String],
-        default:["yo"]
+        type:[UmlSchema],
+        default:[]
    },
    owner:{
       type: mongoose.Schema.ObjectId,

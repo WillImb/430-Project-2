@@ -36,7 +36,7 @@ const getUserBoards = async (req, res) => {
 
 const createBoard = async (req, res) => {
     const boardData = {
-        name: "test",
+        name: "New Board",
         umls: [],
         owner: req.session.account._id,
     };
@@ -72,11 +72,45 @@ const addEmptyUml = async(req,res) => {
             return res.status(400).json({ error: 'Invalid Board' });
         }
         const docs = await Board.findById(req.params.id).exec();
-        docs.umls.push(JSON.stringify(req.body));
-        docs.save();
+        docs.umls.push(req.body);
+        await docs.save();
+
+        return res.json(docs.umls[docs.umls.length-1]);
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Error retrieving board' });
+    }
+}
+
+const updateUml = async(req,res) => {
+     try {       
+
+        if(!req.body.umlId || !req.body.boardId){
+            return res.status(404).json({ error: 'Invalid Uml or Board' });
+        }
+
+        const board = await Board.findById(req.body.boardId).exec();
+
+        if(!board){
+            return res.status(404).json({ error: 'Invalid Board' });
+
+        }
+
+        const uml = board.umls.find(u=>u.id === req.body.umlId);
+
+        if(!uml){
+            return res.status(404).json({ error: 'Invalid Uml' });
+        }
+
+        uml.name = req.body.name;
+
+        await board.save();
+
+        return res.json(uml);
+
+    } catch (err) {
+        return res.status(500).json({ error: 'Error updating Uml' });
+        
     }
 }
 
@@ -89,5 +123,6 @@ module.exports = {
     getUserBoards,
     getUmls,
     addEmptyUml,
+    updateUml,
 
 };
