@@ -1,9 +1,8 @@
-const { response } = require("express");
 const models = require("../models");
 const Board = models.Board;
 
 const boardPage = (req, res) => {
-    const boardId = req.params.id;
+    //const boardId = req.params.id;
     return res.render('board');
 };
 
@@ -109,6 +108,7 @@ const updateUml = async(req,res) => {
         return res.json(uml);
 
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ error: 'Error updating Uml' });
         
     }

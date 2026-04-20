@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const { functions } = require('underscore');
 
-let BoardModel = {};
+
+
 
 const UmlSchema = new mongoose.Schema({
    id:String,
@@ -30,6 +30,6 @@ const BoardSchema = new mongoose.Schema({
 });
 
 
-BoardModel = mongoose.model("Board",BoardSchema);
+const BoardModel = mongoose.model("Board",BoardSchema);
 
 module.exports = BoardModel;
