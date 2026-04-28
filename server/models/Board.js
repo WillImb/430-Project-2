@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 
 
 const UmlSchema = new mongoose.Schema({
-   id:String,
    name:String,
    functions:[String],
    fields:[String]

@@ -52,6 +52,32 @@ const createBoard = async (req, res) => {
     }
 }
 
+const changeBoardName = async (req,res) => {
+    try{
+        const board = await Board.findById(req.body.currentBoard).exec();
+
+        board.title = req.body.newName;
+
+        await board.save();
+        return res.status(201).json({ name: board.name});
+    }catch(err){
+        console.log(err);        
+        return res.status(500).json({ error: 'An error occured updating a board' });
+    }
+}
+
+const deleteBoard = async(req,res)=>
+{ 
+    try{
+        const board = await Board.findByIdAndDelete(req.body.id).exec();       
+
+        return res.status(200).json({message: "Successful Deletion"});
+    }catch(err){
+        console.log(err);        
+        return res.status(500).json({ error: 'An error occured deleting a board' });
+    }
+}
+
 const getUmls = async(req, res) => {
     try {
         if (!req.params.id) {
@@ -78,6 +104,35 @@ const addEmptyUml = async(req,res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Error retrieving board' });
+    }
+}
+
+const deleteUml = async(req,res) => {
+    try{
+        const board = await Board.findById(req.body.boardId).exec();  
+
+        if(!board){
+            return res.status(404).json({
+                error: 'Board not found'
+            });
+        }
+
+        const uml = await board.umls.id(req.body.id);
+        
+        if(!uml){
+            return res.status(404).json({
+                error: 'UML not found'
+            });
+        }
+        
+        uml.deleteOne();
+
+        await board.save();
+
+        return res.status(200).json({message: "Successful Deletion"});
+    }catch(err){
+        console.log(err);        
+        return res.status(500).json({ error: 'An error occured deleting a Uml' });
     }
 }
 
@@ -155,10 +210,13 @@ module.exports = {
     boardPage,
     getBoard,
     createBoard,
+    changeBoardName,
+    deleteBoard,
     getUserBoards,
     getUmls,
     addEmptyUml,
     addEmptyFunction,
     updateUml,
+    deleteUml,
 
 };

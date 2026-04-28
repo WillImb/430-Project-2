@@ -8,6 +8,9 @@ const loginPage = (req, res) => {
 const menuPage = (req, res) => {
     return res.render('menu');
 };
+const accountPage = (req, res) => {
+    return res.render('account');
+};
 
 
 
@@ -71,6 +74,10 @@ const signup = async (req, res) => {
     }
 };
 
+const getCurrentUser = (req,res) => {
+    return res.status(200).json({user: req.session.account._id});
+}
+
 
 
 
@@ -80,5 +87,7 @@ module.exports = {
     logout,
     signup,
     menuPage,
+    accountPage,
+    getCurrentUser,
     
 }

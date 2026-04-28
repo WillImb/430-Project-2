@@ -4,6 +4,8 @@ module.exports = {
     entry: {
         app: './client/board.jsx',
         menu: './client/menu.jsx',
+        board: './client/board.jsx',
+        account: './client/account.jsx',
         login: './client/login.jsx',
     },
     module: {

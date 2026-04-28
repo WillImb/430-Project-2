@@ -127,12 +127,6 @@ nav:nth-child(1) {
 }
 
 
-
-
-
-
-
-
 button{
     color: white;
     background-color: red;
@@ -151,7 +145,7 @@ button{
     margin-left: 2.5vw;
 }
 
-#boardDisplay div{
+#boardDisplay div div{
     margin: 10%;
     
     align-items: center;
@@ -168,9 +162,20 @@ button{
     height: 100px;
     width: 200px;
     overflow: hidden;
-    cursor: pointer;
-    
+    cursor: pointer;  
 }
 #popup{
     background-color: lightcoral;
+}
+#changeName {
+    background-color: White;
+    position: fixed;
+    width: 300px;
+    height: 500px;
+    top:50%;
+    left:45%;
+    border: solid 1px black;
+}
+#changeName h1 {
+    align-self: center;
 }

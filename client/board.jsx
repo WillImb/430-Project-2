@@ -17,7 +17,6 @@ const ToolBar = (props) => {
         e.preventDefault();
 
         const newUML = {
-            "id": Date.now().toString(),
             "name": "",
             "functions": [],
             "fields": []
@@ -52,7 +51,7 @@ const UmlPopup = (props) => {
                     const newValue = e.target.value;
                     props.setUmls(cur =>
                         cur.map(uml => {
-                            if (props.selectedUml && uml.id === props.selectedUml.id) {
+                            if (props.selectedUml && uml._id === props.selectedUml._id) {
                                 const updatedFunction = [...uml.functions];
                                 updatedFunction[i] = newValue
 
@@ -67,7 +66,7 @@ const UmlPopup = (props) => {
                     clearTimeout(timeOutRef.current);
 
                     timeOutRef.current = setTimeout(() => {
-                        helper.sendPost('/updateUml', { umlId: props.selectedUml.id, boardId: pageId, functions: updatedFunction});
+                        helper.sendPost('/updateUml', { umlId: props.selectedUml._id, boardId: pageId, functions: updatedFunction });
 
 
                     }, 500);
@@ -86,6 +85,15 @@ const UmlPopup = (props) => {
 
         })
 
+        const deleteHelper = async (id) => {
+            if (!id) {
+                return false;
+            }
+            await helper.sendPost("/deleteUml", {boardId: pageId, id: id });
+            props.triggerReload();
+            props.setSelectedUmlId(null);
+        }
+
 
         return (
             <div id='popup'>
@@ -97,7 +105,7 @@ const UmlPopup = (props) => {
 
                     onChange={(e) => {
                         props.setUmls(cur =>
-                            cur.map(uml => props.selectedUml && uml.id === props.selectedUml.id
+                            cur.map(uml => props.selectedUml && uml._id === props.selectedUml._id
                                 ? { ...uml, name: e.target.value }
                                 : uml
                             )
@@ -105,7 +113,7 @@ const UmlPopup = (props) => {
                         clearTimeout(timeOutRef.current);
 
                         timeOutRef.current = setTimeout(() => {
-                            helper.sendPost('/updateUml', { umlId: props.selectedUml.id, boardId: pageId, name: e.target.value});
+                            helper.sendPost('/updateUml', { umlId: props.selectedUml._id, boardId: pageId, name: e.target.value });
 
                         }, 500);
 
@@ -116,21 +124,21 @@ const UmlPopup = (props) => {
                 <label htmlFor="functions">Functions: </label>
                 {functionInputs}
                 <button id='addFunction' onClick={() => {
-                   const updatedFunctions = [...props.selectedUml.functions,""]; 
+                    const updatedFunctions = [...props.selectedUml.functions, ""];
 
-                    props.setUmls(cur =>cur.map(uml => uml.id === props.selectedUml.id
-                                ? {
-                                    ...uml,
-                                    functions: updatedFunctions
-                                }
-                                : uml
-                        )
+                    props.setUmls(cur => cur.map(uml => uml._id === props.selectedUml._id
+                        ? {
+                            ...uml,
+                            functions: updatedFunctions
+                        }
+                        : uml
+                    )
                     );
 
                     clearTimeout(timeOutRef.current);
 
                     timeOutRef.current = setTimeout(() => {
-                        helper.sendPost('/updateUml', { umlId: props.selectedUml.id, boardId: pageId, functions: updatedFunctions });
+                        helper.sendPost('/updateUml', { umlId: props.selectedUml._id, boardId: pageId, functions: updatedFunctions });
 
                     }, 500);
 
@@ -142,6 +150,8 @@ const UmlPopup = (props) => {
                 {fieldInputs}
                 <button id='addField'>Add New Field</button>
 
+
+                <button id='deleteUml' onClick={()=>{deleteHelper(props.selectedUml._id)}}>DeleteUml</button>
 
 
 
@@ -203,11 +213,11 @@ const Umls = (props) => {
         return (<div className='uml'
             onClick={() => {
 
-                if (props.selectedUmlId === uml.id) {
+                if (props.selectedUmlId === uml._id) {
                     props.setSelectedUmlId(null);
                 }
                 else {
-                    props.setSelectedUmlId(uml.id);
+                    props.setSelectedUmlId(uml._id);
 
                 }
             }
@@ -247,7 +257,9 @@ const App = () => {
 
     const [selectedUmlId, setSelectedUmlId] = useState(null);
 
-    const selectedUml = umls.find(uml => uml.id === selectedUmlId);
+    const selectedUml = umls.find(uml => uml._id === selectedUmlId);
+
+    const [reload, setReload] = useState(false)
 
     useEffect(() => {
         const getUmlFromServer = async () => {
@@ -263,7 +275,7 @@ const App = () => {
             }
         }
         getUmlFromServer();
-    }, []);
+    }, [reload]);
 
     return (
         <div>
@@ -274,7 +286,7 @@ const App = () => {
                 <Board />
             </div>
             <div>
-                <UmlPopup selectedUml={selectedUml} setUmls={setUmls} />
+                <UmlPopup selectedUml={selectedUml} setSelectedUmlId={setSelectedUmlId} setUmls={setUmls} triggerReload={()=>{setReload(!reload)}}/>
             </div>
             <div>
                 <Umls umls={umls} setSelectedUmlId={setSelectedUmlId} selectedUmlId={selectedUmlId} />

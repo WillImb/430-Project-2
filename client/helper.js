@@ -1,10 +1,6 @@
 
 
 
-const handleError = (message) => {
-  document.getElementById('errorMessage').textContent = message;
-  document.getElementById('domoMessage').classList.remove('hidden');
-};
 
 
 
@@ -24,9 +20,7 @@ const sendPost = async (url, data, handler) => {
     window.location = result.redirect;
   }
 
-  if (result.error) {
-    handleError(result.error);
-  }
+
 
   if (handler) {
     handler(result);
@@ -36,9 +30,7 @@ const sendPost = async (url, data, handler) => {
 
 };
 
-const hideError = () => {
-  document.getElementById('domoMessage').classList.add('hidden');
-};
+
 
 
 
@@ -48,7 +40,6 @@ const hideError = () => {
 module.exports = {
 
   sendPost,
-  handleError,
-  hideError,
+
 
 };

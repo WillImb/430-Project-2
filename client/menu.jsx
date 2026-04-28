@@ -9,9 +9,11 @@ const { createRoot } = require('react-dom/client');
 
 
 
+
+
 const BoardMenu = (props) => {
 
-    const createBoard = async(e) => {
+    const createBoard = async (e) => {
         e.preventDefault();
         await helper.sendPost('/createBoard', {});
         props.triggerReload();
@@ -25,6 +27,14 @@ const BoardMenu = (props) => {
 const BoardList = (props) => {
 
     const [boards, setBoards] = useState([]);
+
+    const deleteHelper = async (id) =>{
+        if(!id){
+            return false;
+        }
+        await helper.sendPost("/deleteBoard",{id:id});
+        props.triggerReload();
+    }
 
 
     useEffect(() => {
@@ -43,26 +53,65 @@ const BoardList = (props) => {
     }
 
     const boardsDisplay = boards.map(board => {
-        return (<a
+        return (<div><a
             href={`/board/${board._id}`}><div>
-            {board.title}
-        </div></a>);
+                {board.title}
+            </div></a><button onClick={() => { props.setIsOn(true); props.setCurrentBoard(board._id) }}>Edit Name</button>
+            <br />
+            <button onClick={()=>{deleteHelper(board._id)}}>Trash</button></div>);
     });
 
     return (<div id='boardDisplay'>{boardsDisplay}</div>);
 }
 
+const NameChangePopup = (props) => {
+
+    const handleNameChange = async (e, currentBoard) => {
+        e.preventDefault();
+        const newName = e.target.querySelector('#boardName').value;
+        if (!newName || !currentBoard) {
+            return false;
+        }
+        await helper.sendPost(e.target.action, { currentBoard, newName })
+        props.triggerReload();
+        props.setIsOn(false);
+        props.setCurrentBoard("");
+        return false;
+    }
+
+    if (props.isOn) {
+        return (
+            <div id='changeName'>
+                <h1>Change Name</h1>
+                <form
+                    onSubmit={(e) => handleNameChange(e, props.currentBoard)}
+                    action="/changeBoardName"
+                    method="POST"
+                >
+                    <label htmlFor="boardName">New Name </label>
+                    <input id="boardName" type="text" name="boardName" placeholder="New Name" />
+                    <input className='formSubmit' type='submit' value="Update Name" />
+                </form>
+            </div>
+        );
+    }
+    return ("");
+}
+
+
 const App = () => {
 
     const [reload, setReload] = useState(false);
+    const [isOn, setIsOn] = useState(false);
+    const [currentBoard, setCurrentBoard] = useState("");
 
     return (
         <div>
             <BoardMenu triggerReload={() => { setReload(!reload) }} />
 
-            <BoardList reloadBoards={reload} />
-            
-            
+            <BoardList reloadBoards={reload} setIsOn={setIsOn} setCurrentBoard={setCurrentBoard} triggerReload={() => { setReload(!reload) }}/>
+
+            <NameChangePopup isOn={isOn} currentBoard={currentBoard} setIsOn={setIsOn} setCurrentBoard={setCurrentBoard} triggerReload={() => { setReload(!reload) }}/>
         </div>
     );
 }
