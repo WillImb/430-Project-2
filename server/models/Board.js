@@ -13,7 +13,7 @@ const UmlSchema = new mongoose.Schema({
 const BoardSchema = new mongoose.Schema({
    title:{
       type: String,
-      default: "test",
+      default: "New Board",
    },
    umls:{
         type:[UmlSchema],

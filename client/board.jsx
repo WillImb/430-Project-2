@@ -1,3 +1,6 @@
+import { functions } from 'underscore';
+import { populate } from '../server/models/Board.js';
+
 const helper = require('./helper.js');
 const React = require('react');
 const { useEffect, useState, useRef } = React;
@@ -7,7 +10,7 @@ const pageId = window.location.pathname.split('/').pop();
 
 
 
-
+//all of our avaialble tools.
 const ToolBar = (props) => {
 
     const addEmptyUml = async (e) => {
@@ -33,17 +36,62 @@ const ToolBar = (props) => {
     );
 };
 
+//pops up when a uml is selected to be edited
 const UmlPopup = (props) => {
     //       https://stackoverflow.com/questions/43792457/update-one-of-the-objects-in-array-in-an-immutable-way
     //refernced this to make the onchange function
     const timeOutRef = useRef(null);
 
     if (props.selectedUml) {
+
+
+        const functionInputs = props.selectedUml.functions.map((f, i) => {
+            return (<input class="functionInput" type='text' name='functions'
+                value={f}
+                onChange={(e) => {
+                    const newValue = e.target.value;
+                    props.setUmls(cur =>
+                        cur.map(uml => {
+                            if (props.selectedUml && uml.id === props.selectedUml.id) {
+                                const updatedFunction = [...uml.functions];
+                                updatedFunction[i] = newValue
+
+                                return {
+                                    ...uml,
+                                    functions: updatedFunction
+                                };
+                            }
+                            return uml;
+                        })
+                    );
+                    clearTimeout(timeOutRef.current);
+
+                    timeOutRef.current = setTimeout(() => {
+                        helper.sendPost('/updateUml', { umlId: props.selectedUml.id, boardId: pageId, functions: updatedFunction});
+
+
+                    }, 500);
+
+
+
+                }}
+            />)
+
+        })
+
+        const fieldInputs = props.selectedUml.fields.map(fi => {
+            return (<input class="fieldInput" type='text' name='fields'
+                value={fi}
+            />)
+
+        })
+
+
         return (
             <div id='popup'>
                 Edit Uml
                 <br />
-                <label htmlFor="username">Name: </label>
+                <label htmlFor="name">Name: </label>
                 <input id="name" type='text' name='umlName'
                     value={props.selectedUml.name}
 
@@ -54,11 +102,10 @@ const UmlPopup = (props) => {
                                 : uml
                             )
                         );
-
                         clearTimeout(timeOutRef.current);
 
                         timeOutRef.current = setTimeout(() => {
-                            helper.sendPost('/updateUml', { umlId: props.selectedUml.id, boardId: pageId, name: e.target.value });
+                            helper.sendPost('/updateUml', { umlId: props.selectedUml.id, boardId: pageId, name: e.target.value});
 
                         }, 500);
 
@@ -66,7 +113,38 @@ const UmlPopup = (props) => {
 
                     }}
                 />
-                
+                <label htmlFor="functions">Functions: </label>
+                {functionInputs}
+                <button id='addFunction' onClick={() => {
+                   const updatedFunctions = [...props.selectedUml.functions,""]; 
+
+                    props.setUmls(cur =>cur.map(uml => uml.id === props.selectedUml.id
+                                ? {
+                                    ...uml,
+                                    functions: updatedFunctions
+                                }
+                                : uml
+                        )
+                    );
+
+                    clearTimeout(timeOutRef.current);
+
+                    timeOutRef.current = setTimeout(() => {
+                        helper.sendPost('/updateUml', { umlId: props.selectedUml.id, boardId: pageId, functions: updatedFunctions });
+
+                    }, 500);
+
+
+
+                }}>Add New Function</button>
+
+                <label htmlFor="fields">Fields: </label>
+                {fieldInputs}
+                <button id='addField'>Add New Field</button>
+
+
+
+
 
 
             </div>
@@ -100,7 +178,7 @@ const Board = (props) => {
 
     return (
         <div className="board">
-            {title}
+            Title: {title}
 
         </div>
     );
@@ -133,6 +211,7 @@ const Umls = (props) => {
 
                 }
             }
+
             }>
             {JSON.stringify({
                 name: uml.name,

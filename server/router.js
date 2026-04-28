@@ -29,6 +29,7 @@ const router = (app) => {
 
     
     app.post('/addEmptyUml/:id',mid.requiresSecure,mid.requiresLogin, controllers.Board.addEmptyUml);
+    app.post('/addEmptyFunction/',mid.requiresSecure,mid.requiresLogin, controllers.Board.addEmptyFunction);
     app.post('/updateUml',mid.requiresSecure,mid.requiresLogin, controllers.Board.updateUml);
     
     

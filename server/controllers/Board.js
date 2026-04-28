@@ -81,6 +81,38 @@ const addEmptyUml = async(req,res) => {
     }
 }
 
+const addEmptyFunction = async(req,res) => {
+    try{
+        if(!req.body.umlId || !req.body.boardId){
+            return res.status(404).json({ error: 'Invalid Uml or Board' });
+        }
+        const board = await Board.findById(req.body.boardId).exec();
+
+        if(!board){
+            return res.status(404).json({ error: 'Invalid Board' });
+
+        }
+
+        const uml = board.umls.find(u=>u.id === req.body.umlId);
+
+        if(!uml){
+            return res.status(404).json({ error: 'Invalid Uml' });
+        }
+
+        uml.functions.push("");
+
+        await board.save();
+
+        return res.json(uml);
+
+
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({error: 'Error adding new function'});
+    }
+
+}
+
 const updateUml = async(req,res) => {
      try {       
 
@@ -100,8 +132,11 @@ const updateUml = async(req,res) => {
         if(!uml){
             return res.status(404).json({ error: 'Invalid Uml' });
         }
+        if(req.body.name)
+            uml.name = req.body.name;
+        if(req.body.functions)
+            uml.functions = req.body.functions;
 
-        uml.name = req.body.name;
 
         await board.save();
 
@@ -123,6 +158,7 @@ module.exports = {
     getUserBoards,
     getUmls,
     addEmptyUml,
+    addEmptyFunction,
     updateUml,
 
 };

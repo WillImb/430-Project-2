@@ -43,13 +43,13 @@ const BoardList = (props) => {
     }
 
     const boardsDisplay = boards.map(board => {
-        return (<div><a
-            href={`/board/${board._id}`}>
+        return (<a
+            href={`/board/${board._id}`}><div>
             {board.title}
-        </a></div>);
+        </div></a>);
     });
 
-    return (<div>{boardsDisplay}</div>);
+    return (<div id='boardDisplay'>{boardsDisplay}</div>);
 }
 
 const App = () => {
@@ -58,13 +58,11 @@ const App = () => {
 
     return (
         <div>
-            <div>
-                <BoardMenu triggerReload={() => { setReload(!reload) }} />
-            </div>
+            <BoardMenu triggerReload={() => { setReload(!reload) }} />
 
-            <div>
-                <BoardList reloadBoards={reload} />
-            </div>
+            <BoardList reloadBoards={reload} />
+            
+            
         </div>
     );
 }
