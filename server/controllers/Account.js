@@ -75,7 +75,24 @@ const signup = async (req, res) => {
 };
 
 const getCurrentUser = (req,res) => {
-    return res.status(200).json({user: req.session.account._id});
+    return res.status(200).json({name: req.session.account.username, premium: req.session.account.premium});
+}
+
+const updatePremium = async (req,res) => {
+
+    try{
+        if(req.body.status == !undefined){
+            const acc = await Account.findById(req.session.account._id);
+            acc.premium = req.body.status;
+
+            console.log(acc);
+            await acc.save();
+
+            return res.status(200).json({premium: acc.premium});
+        }
+    }catch(err){
+        return res.status(500).json({ error: 'An error occured' });
+    }
 }
 
 
@@ -89,5 +106,6 @@ module.exports = {
     menuPage,
     accountPage,
     getCurrentUser,
+    updatePremium,
     
 }

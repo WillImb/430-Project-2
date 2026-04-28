@@ -24,6 +24,7 @@ const router = (app) => {
     
     app.get('/getUserBoards',mid.requiresSecure,mid.requiresLogin, controllers.Board.getUserBoards);
 
+    app.post('/updatePremium',mid.requiresSecure,mid.requiresLogin, controllers.Account.updatePremium);
 
 
     app.get('/getBoard/:id',mid.requiresSecure,mid.requiresLogin, controllers.Board.getBoard);

@@ -25,7 +25,12 @@ const AccountSchema = new mongoose.Schema({
   boards: {
       type: [String],
       default: [],
+  },
+  premium: {
+    type: Boolean,
+    default: false,
   }
+
 });
 
 AccountSchema.statics.toAPI = (doc) => ({
