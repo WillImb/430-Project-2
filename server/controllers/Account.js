@@ -90,6 +90,7 @@ const updatePremium = async (req,res) => {
             return res.status(200).json({premium: acc.premium});
         }
     }catch(err){
+        console.log(err);
         return res.status(500).json({ error: 'An error occured' });
     }
 }

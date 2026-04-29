@@ -69,7 +69,8 @@ const changeBoardName = async (req,res) => {
 const deleteBoard = async(req,res)=>
 { 
     try{
-        const board = await Board.findByIdAndDelete(req.body.id).exec();       
+        const board = await Board.findByIdAndDelete(req.body.id).exec();     
+        console.log(board);  
 
         return res.status(200).json({message: "Successful Deletion"});
     }catch(err){
@@ -168,37 +169,7 @@ const addEmptyFunction = async(req,res) => {
 
 }
 
-const addEmptyField = async(req,res) => {
-    try{
-        if(!req.body.umlId || !req.body.boardId){
-            return res.status(404).json({ error: 'Invalid Uml or Board' });
-        }
-        const board = await Board.findById(req.body.boardId).exec();
 
-        if(!board){
-            return res.status(404).json({ error: 'Invalid Board' });
-
-        }
-
-        const uml = board.umls.find(u=>u.id === req.body.umlId);
-
-        if(!uml){
-            return res.status(404).json({ error: 'Invalid Uml' });
-        }
-
-        uml.fields.push("");
-
-        await board.save();
-
-        return res.json(uml);
-
-
-    }catch(err){
-        console.log(err);
-        return res.status(500).json({error: 'Error adding new field'});
-    }
-
-}
 
 const updateUml = async(req,res) => {
      try {       
