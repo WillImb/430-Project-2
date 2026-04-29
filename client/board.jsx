@@ -1,5 +1,3 @@
-import { functions } from 'underscore';
-import { populate } from '../server/models/Board.js';
 
 const helper = require('./helper.js');
 const React = require('react');
@@ -19,7 +17,9 @@ const ToolBar = (props) => {
         const newUML = {
             "name": "",
             "functions": [],
-            "fields": []
+            "fields": [],
+            "x": 10,
+            "y": 10
         }
 
         const res = await helper.sendPost(`/addEmptyUml/${pageId}`, newUML, (newUml) => {
@@ -45,51 +45,83 @@ const UmlPopup = (props) => {
 
 
         const functionInputs = props.selectedUml.functions.map((f, i) => {
-            return (<input class="functionInput" type='text' name='functions'
-                value={f}
-                onChange={(e) => {
-                    const newValue = e.target.value;
-                    props.setUmls(cur =>
-                        cur.map(uml => {
-                            if (props.selectedUml && uml._id === props.selectedUml._id) {
-                                const updatedFunction = [...uml.functions];
-                                updatedFunction[i] = newValue
+            return (<React.Fragment>
+                <br />
+                <input class="functionInput" type='text' name='functions'
+                    value={f}
+                    onChange={(e) => {
+                        const newValue = e.target.value;
+                        const updatedFunction = [...props.selectedUml.functions];
+                        updatedFunction[i] = newValue
+                        props.setUmls(cur =>
+                            cur.map(uml => {
+                                if (props.selectedUml && uml._id === props.selectedUml._id) {
 
-                                return {
-                                    ...uml,
-                                    functions: updatedFunction
-                                };
-                            }
-                            return uml;
-                        })
-                    );
-                    clearTimeout(timeOutRef.current);
+                                    return {
+                                        ...uml,
+                                        functions: updatedFunction
+                                    };
+                                }
+                                return uml;
+                            })
+                        );
+                        clearTimeout(timeOutRef.current);
 
-                    timeOutRef.current = setTimeout(() => {
-                        helper.sendPost('/updateUml', { umlId: props.selectedUml._id, boardId: pageId, functions: updatedFunction });
-
-
-                    }, 500);
-
+                        timeOutRef.current = setTimeout(() => {
+                            helper.sendPost('/updateUml', { umlId: props.selectedUml._id, boardId: pageId, functions: updatedFunction });
 
 
-                }}
-            />)
+                        }, 500);
+
+
+
+                    }}
+                /></React.Fragment>)
+
+        })
+
+        const fieldInputs = props.selectedUml.fields.map((f, i) => {
+            return (<React.Fragment>
+                <br />
+                <input class="fieldInput" type='text' name='fieldss'
+                    value={f}
+                    onChange={(e) => {
+                        const newValue = e.target.value;
+                        const updatedField = [...props.selectedUml.fields];
+                        updatedField[i] = newValue
+                        props.setUmls(cur =>
+                            cur.map(uml => {
+                                if (props.selectedUml && uml._id === props.selectedUml._id) {
+
+                                    return {
+                                        ...uml,
+                                        fields: updatedField
+                                    };
+                                }
+                                return uml;
+                            })
+                        );
+                        clearTimeout(timeOutRef.current);
+
+                        timeOutRef.current = setTimeout(() => {
+                            helper.sendPost('/updateUml', { umlId: props.selectedUml._id, boardId: pageId, fields: updatedField });
+
+
+                        }, 500);
+
+
+
+                    }}
+                /></React.Fragment>)
 
         })
 
-        const fieldInputs = props.selectedUml.fields.map(fi => {
-            return (<input class="fieldInput" type='text' name='fields'
-                value={fi}
-            />)
-
-        })
 
         const deleteHelper = async (id) => {
             if (!id) {
                 return false;
             }
-            await helper.sendPost("/deleteUml", {boardId: pageId, id: id });
+            await helper.sendPost("/deleteUml", { boardId: pageId, id: id });
             props.triggerReload();
             props.setSelectedUmlId(null);
         }
@@ -97,10 +129,9 @@ const UmlPopup = (props) => {
 
         return (
             <div id='popup'>
-                Edit Uml
-                <br />
+                <p>Edit Uml</p>
                 <label htmlFor="name">Name: </label>
-                <input id="name" type='text' name='umlName'
+                <br /><input id="name" type='text' name='umlName'
                     value={props.selectedUml.name}
 
                     onChange={(e) => {
@@ -121,9 +152,10 @@ const UmlPopup = (props) => {
 
                     }}
                 />
+                <br />
                 <label htmlFor="functions">Functions: </label>
                 {functionInputs}
-                <button id='addFunction' onClick={() => {
+                <br /><button id='addFunction' onClick={() => {
                     const updatedFunctions = [...props.selectedUml.functions, ""];
 
                     props.setUmls(cur => cur.map(uml => uml._id === props.selectedUml._id
@@ -146,12 +178,35 @@ const UmlPopup = (props) => {
 
                 }}>Add New Function</button>
 
-                <label htmlFor="fields">Fields: </label>
+
+                <br /><label htmlFor="fields">Fields: </label>
                 {fieldInputs}
-                <button id='addField'>Add New Field</button>
+                <br /><button id='addField' onClick={() => {
+                    const updatedFields = [...props.selectedUml.fields, ""];
+
+                    props.setUmls(cur => cur.map(uml => uml._id === props.selectedUml._id
+                        ? {
+                            ...uml,
+                            fields: updatedFields
+                        }
+                        : uml
+                    )
+                    );
+
+                    clearTimeout(timeOutRef.current);
+
+                    timeOutRef.current = setTimeout(() => {
+                        helper.sendPost('/updateUml', { umlId: props.selectedUml._id, boardId: pageId, fields: updatedFields });
+
+                    }, 500);
 
 
-                <button id='deleteUml' onClick={()=>{deleteHelper(props.selectedUml._id)}}>DeleteUml</button>
+
+                }}>Add New Field</button>
+
+                <br />
+                <br />
+                <button id='deleteUml' onClick={() => { deleteHelper(props.selectedUml._id) }}>DeleteUml</button>
 
 
 
@@ -188,7 +243,7 @@ const Board = (props) => {
 
     return (
         <div className="board">
-            Title: {title}
+            {title}
 
         </div>
     );
@@ -210,6 +265,53 @@ const Umls = (props) => {
 
 
     const displayUmls = props.umls.map(uml => {
+
+        const onDrag = (e) => {
+            e.preventDefault();
+
+            const startX = e.clientX;
+            const startY = e.clientY;
+
+            const initX = uml.x;
+            const initY = uml.y;
+
+            const OnMouseMove = (moveEvent) => {
+                const dx = moveEvent.clientX - startX;
+                const dy = moveEvent.clientY - startY;
+
+                //if the uml matches the one we are dragging append its new position
+                props.setUmls(cur => cur.map(u =>
+                    u._id === uml._id
+                        ? {
+                            ...u,
+                            x: initX + dx,
+                            y: initY + dy
+                        }
+                        : u
+
+                ))
+            }
+
+
+            const OnMouseUp = async (mouseEvent) => {
+                const dx = mouseEvent.clientX - startX;
+                const dy = mouseEvent.clientY - startY;
+
+                document.removeEventListener('mousemove', OnMouseMove);
+                document.removeEventListener('mouseup', OnMouseUp);
+
+                await helper.sendPost('/updateUml', {
+                    umlId: uml._id,
+                    boardId: pageId,
+                    x: initX + dx,
+                    y: initY + dy
+                });
+            }
+
+            document.addEventListener('mousemove', OnMouseMove);
+            document.addEventListener('mouseup', OnMouseUp);
+        };
+
         return (<div className='uml'
             onClick={() => {
 
@@ -220,36 +322,84 @@ const Umls = (props) => {
                     props.setSelectedUmlId(uml._id);
 
                 }
-            }
-
-            }>
-            {JSON.stringify({
-                name: uml.name,
-                functions: uml.functions,
-                fields: uml.fields,
-            })
-            }
+            }}
+            onMouseDown={onDrag}
+            style={{
+                position: 'absolute',
+                left: `${uml.x}px`,
+                top: `${uml.y}px`,
+                cursor: 'move'
+            }}
+        >
+            
+                <x>{uml.name}</x>
+                <br/>
+                <y>Functions:</y>
+                <br/> 
+                {uml.functions.map((f,i)=>(
+                    <li>{f}</li>
+                ))}
+                <br/>
+                <y>Fields:</y>
+                <br/>                
+                {uml.fields.map((f,i)=>(
+                    <li>{f}</li>
+                ))}
+                
+            
+            
 
 
         </div>)
     })
-    // const displayUmls = umls.map(uml => {
-    //     return(<div>
-    //         <div>{uml.name}</div>
-    //         <div>{uml.functions}</div>
-    //         <div>{uml.fields}</div>
 
-    //     </div>)
-    // })
 
 
     return (
-        <div>
+        <div id='gridArea' style={{ position: 'relative', width: '100%', height: '100%' }}>
             {displayUmls}
 
         </div>
     );
 };
+
+const Ad = (props) => {
+
+    const [premium, setPremium] = useState(false);
+
+    useEffect(() => {
+
+        const getPremium = async () => {
+
+            const response = await fetch('/getUser');
+
+            const data = await response.json();
+
+            if (data) {
+
+                setPremium(data.premium);
+            }
+        };
+        getPremium();
+
+    }, []);
+
+
+    if (premium) {
+        return (
+            <div id='adContainer'>
+
+            </div>
+        );
+    }
+
+
+    return (
+        <div id='adContainer'>
+            <h1>AD</h1>
+        </div>
+    );
+}
 
 const App = () => {
 
@@ -278,19 +428,20 @@ const App = () => {
     }, [reload]);
 
     return (
-        <div>
-            <div>
+        <div id='boardContainer'>
+            <div id='toolbarContainer'>
                 <ToolBar umls={umls} setUmls={setUmls} />
             </div>
-            <div>
+            <div id='titleContainer'>
                 <Board />
             </div>
-            <div>
-                <UmlPopup selectedUml={selectedUml} setSelectedUmlId={setSelectedUmlId} setUmls={setUmls} triggerReload={()=>{setReload(!reload)}}/>
+            <div id='popupContainer'>
+                <UmlPopup selectedUml={selectedUml} setSelectedUmlId={setSelectedUmlId} setUmls={setUmls} triggerReload={() => { setReload(!reload) }} />
             </div>
-            <div>
-                <Umls umls={umls} setSelectedUmlId={setSelectedUmlId} selectedUmlId={selectedUmlId} />
+            <div id='umlsContainer'>
+                <Umls umls={umls} setUmls={setUmls} setSelectedUmlId={setSelectedUmlId} selectedUmlId={selectedUmlId} />
             </div>
+            <Ad />
         </div>
     );
 

@@ -6,7 +6,10 @@ const mongoose = require('mongoose');
 const UmlSchema = new mongoose.Schema({
    name:String,
    functions:[String],
-   fields:[String]
+   fields:[String],
+   x: Number,
+   y: Number
+
 });
 
 const BoardSchema = new mongoose.Schema({

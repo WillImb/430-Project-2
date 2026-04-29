@@ -51,7 +51,7 @@ app.use(session({
     store: new RedisStore({
         client: redisClient,
     }),
-    secret: 'Domo Arigata',
+    secret: 'Uml is the word',
     resave: false,
     saveUninitialized: false,
 }));

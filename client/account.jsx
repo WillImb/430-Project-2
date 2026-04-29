@@ -9,7 +9,7 @@ const { createRoot } = require('react-dom/client');
 
 
 
-const PasswordChangePanel = async (props) => {
+const PasswordChangePanel = (props) => {
 
 }
 
@@ -30,8 +30,6 @@ const App = () => {
             const response = await fetch('/getUser');
 
             const data = await response.json();
-
-            console.log(data);
 
             if (data) {
                 setUser(data.name);
@@ -69,9 +67,9 @@ const App = () => {
 
     return (
         <div>
-            Welcome {user}
+           <h1> Welcome {user}</h1>
 
-            <button>Change Password</button>
+           
 
 
             {getPremium()}

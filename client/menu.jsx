@@ -1,5 +1,6 @@
 
 
+
 const helper = require('./helper.js');
 const React = require('react');
 const { useEffect, useState } = React;
@@ -14,6 +15,24 @@ const { createRoot } = require('react-dom/client');
 const BoardMenu = (props) => {
 
     const createBoard = async (e) => {
+
+        const boardResponse = await fetch('/getUserBoards');
+        const boardData = await boardResponse.json();
+
+        const boardCount = boardData.boards.length;
+
+        if (boardCount >= 10) {
+            const premResponse = await fetch('/getUser');
+
+            const data = await premResponse.json();
+
+            const isPremium = data.premium;
+
+            if(!isPremium){
+                return false;
+            }
+        }
+
         e.preventDefault();
         await helper.sendPost('/createBoard', {});
         props.triggerReload();
@@ -28,11 +47,11 @@ const BoardList = (props) => {
 
     const [boards, setBoards] = useState([]);
 
-    const deleteHelper = async (id) =>{
-        if(!id){
+    const deleteHelper = async (id) => {
+        if (!id) {
             return false;
         }
-        await helper.sendPost("/deleteBoard",{id:id});
+        await helper.sendPost("/deleteBoard", { id: id });
         props.triggerReload();
     }
 
@@ -58,7 +77,7 @@ const BoardList = (props) => {
                 {board.title}
             </div></a><button onClick={() => { props.setIsOn(true); props.setCurrentBoard(board._id) }}>Edit Name</button>
             <br />
-            <button onClick={()=>{deleteHelper(board._id)}}>Trash</button></div>);
+            <button onClick={() => { deleteHelper(board._id) }}>Trash</button></div>);
     });
 
     return (<div id='boardDisplay'>{boardsDisplay}</div>);
@@ -109,9 +128,9 @@ const App = () => {
         <div>
             <BoardMenu triggerReload={() => { setReload(!reload) }} />
 
-            <BoardList reloadBoards={reload} setIsOn={setIsOn} setCurrentBoard={setCurrentBoard} triggerReload={() => { setReload(!reload) }}/>
+            <BoardList reloadBoards={reload} setIsOn={setIsOn} setCurrentBoard={setCurrentBoard} triggerReload={() => { setReload(!reload) }} />
 
-            <NameChangePopup isOn={isOn} currentBoard={currentBoard} setIsOn={setIsOn} setCurrentBoard={setCurrentBoard} triggerReload={() => { setReload(!reload) }}/>
+            <NameChangePopup isOn={isOn} currentBoard={currentBoard} setIsOn={setIsOn} setCurrentBoard={setCurrentBoard} triggerReload={() => { setReload(!reload) }} />
         </div>
     );
 }

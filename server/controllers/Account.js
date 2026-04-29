@@ -81,13 +81,12 @@ const getCurrentUser = (req,res) => {
 const updatePremium = async (req,res) => {
 
     try{
-        if(req.body.status == !undefined){
+        if(req.body.status !== undefined){
             const acc = await Account.findById(req.session.account._id);
             acc.premium = req.body.status;
 
-            console.log(acc);
             await acc.save();
-
+            req.session.account.premium = acc.premium;
             return res.status(200).json({premium: acc.premium});
         }
     }catch(err){
